@@ -14,7 +14,7 @@ function toggleRow(name: string) {
 }
 
 onMounted(async () => {
-  operators.value = (await loadChampions()).filter(op => op.name !== '总数')
+  operators.value = (await loadChampions()).filter((op: Operator) => op.name !== '总数')
 })
 </script>
 
