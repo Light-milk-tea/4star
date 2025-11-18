@@ -4,7 +4,7 @@ import ChampionRank from './pages/ChampionRank.vue'
 import Messages from './pages/Messages.vue'
 import Videos from './pages/Videos.vue'
 import Gacha from './pages/Gacha.vue'
-import DPSCalculator from './pages/DPSCalculator.vue'
+import DpsCalc from './pages/DpsCalc.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -35,7 +35,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/dps-calculator',
     name: 'DPSCalculator',
-    component: DPSCalculator
+    component: DpsCalc
   }
 ]
 
