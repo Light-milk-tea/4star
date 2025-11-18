@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue'
 import { loadChampions, Operator } from '../utils/parseChampionExcel'
 
 const operators = ref<Operator[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
 // 记录哪一行展开了
 const expanded = ref<Set<string>>(new Set())
 
@@ -14,7 +16,13 @@ function toggleRow(name: string) {
 }
 
 onMounted(async () => {
-  operators.value = (await loadChampions()).filter((op: Operator) => op.name !== '总数')
+  try {
+    operators.value = await loadChampions()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e)
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
@@ -24,6 +32,8 @@ onMounted(async () => {
     <router-link to="/" class="back-home">返回主页</router-link>
 
     <div class="rank-container">
+      <div v-if="loading" style="padding:1rem;text-align:center;color:#5D4037;">加载中…</div>
+      <div v-else-if="error" style="padding:1rem;text-align:center;color:#d32f2f;">加载失败：{{ error }}</div>
       <table class="rank-table">
         <colgroup>
           <col style="width:80px" />
@@ -42,7 +52,7 @@ onMounted(async () => {
         <tbody>
           <template v-for="(op, index) in operators" :key="op.name">
             <tr>
-              <td class="rank-number">{{ op.name === '总数' ? '' : (index + 1) }}</td>
+              <td class="rank-number">{{ index + 1 }}</td>
               <td class="operator-name">{{ op.name }}</td>
               <td class="champion-count">{{ op.championCount }}</td>
               <td>
@@ -63,6 +73,9 @@ onMounted(async () => {
               </td>
             </tr>
           </template>
+          <tr v-if="!loading && !error && operators.length === 0">
+            <td colspan="4" style="text-align:center;color:#5D4037;padding:1rem;">暂无数据</td>
+          </tr>
         </tbody>
       </table>
     </div>
