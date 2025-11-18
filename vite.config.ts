@@ -4,7 +4,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/4star/',
+  base: '/',
   publicDir: '网页配置文件',
   resolve: {
     alias: {

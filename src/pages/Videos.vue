@@ -66,6 +66,7 @@ const list = ref<Item[]>(
 const storageKey = 'videos.list'
 const coverRetry: Record<number, number> = {}
 const blockedBVs = new Set<string>(['BV1541oBcEKx'])
+const isDev = import.meta.env.DEV
 
 onMounted(async () => {
   try {
@@ -88,7 +89,10 @@ onMounted(async () => {
   const tasks = list.value.map(async (v, i) => {
     if (v.bv) {
       try {
-        const res = await fetch(`/api-bili/x/web-interface/view?bvid=${v.bv}`)
+        const apiEndpoint = isDev
+          ? `/api-bili/x/web-interface/view?bvid=${v.bv}`
+          : `https://r.jina.ai/https://api.bilibili.com/x/web-interface/view?bvid=${v.bv}`
+        const res = await fetch(apiEndpoint)
         const data = await res.json()
         const pic = data?.data?.pic as string | undefined
         const title = data?.data?.title as string | undefined
@@ -99,7 +103,10 @@ onMounted(async () => {
       } catch {}
       if (!list.value[i].cover) {
         try {
-          const res = await fetch(`/html-bili/https://www.bilibili.com/video/${v.bv}`)
+          const htmlEndpoint = isDev
+            ? `/html-bili/https://www.bilibili.com/video/${v.bv}`
+            : `https://r.jina.ai/https://www.bilibili.com/video/${v.bv}`
+          const res = await fetch(htmlEndpoint)
           const html = await res.text()
           const doc = new DOMParser().parseFromString(html, 'text/html')
           const m =
@@ -146,7 +153,7 @@ function imgSrc(u: string): string {
   try {
     const url = new URL(u)
     if (url.hostname.endsWith('hdslb.com')) {
-      return `/img-bili${url.pathname}`
+      return isDev ? `/img-bili${url.pathname}` : url.toString()
     }
     return url.toString()
   } catch {

@@ -25,66 +25,81 @@ const sbHeaders = (): Record<string, string> => {
 export const MessageService = {
   async getMessages(): Promise<Message[]> {
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/messages?select=*&order=timestamp.desc`, { headers: sbHeaders() })
-      if (!res.ok) throw new Error('Failed to fetch messages')
-      const rows = await res.json()
-      return (rows as any[]).map((r) => ({ id: r.id, content: r.content, author: r.author, timestamp: r.timestamp, likes: r.likes ?? 0, likedBy: r.liked_by ?? [] }))
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/messages?select=*&order=timestamp.desc`, { headers: sbHeaders() })
+        if (res.ok) {
+          const rows = await res.json()
+          return (rows as any[]).map((r) => ({ id: r.id, content: r.content, author: r.author, timestamp: r.timestamp, likes: r.likes ?? 0, likedBy: r.liked_by ?? [] }))
+        }
+      } catch {}
     }
     if (API_URL) {
-      const res = await fetch(`${API_URL}/messages`, { headers: headers() })
-      if (!res.ok) throw new Error('Failed to fetch messages')
-      const data = await res.json()
-      return Array.isArray(data) ? data.sort((a: Message, b: Message) => b.timestamp - a.timestamp) : []
+      try {
+        const res = await fetch(`${API_URL}/messages`, { headers: headers() })
+        if (res.ok) {
+          const data = await res.json()
+          return Array.isArray(data) ? data.sort((a: Message, b: Message) => b.timestamp - a.timestamp) : []
+        }
+      } catch {}
     }
     return Promise.resolve(MessageStorageService.getMessages())
   },
 
   async addMessage(content: string, author: string): Promise<Message> {
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-      const body = { content: content.trim(), author: author.trim(), timestamp: Date.now(), likes: 0, liked_by: [] }
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/messages`, { method: 'POST', headers: sbHeaders(), body: JSON.stringify(body) })
-      if (!res.ok) throw new Error('Failed to add message')
-      const row = await res.json()
-      const r = Array.isArray(row) ? row[0] : row
-      return { id: r.id, content: r.content, author: r.author, timestamp: r.timestamp, likes: r.likes ?? 0, likedBy: r.liked_by ?? [] }
+      try {
+        const body = { content: content.trim(), author: author.trim(), timestamp: Date.now(), likes: 0, liked_by: [] }
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/messages`, { method: 'POST', headers: sbHeaders(), body: JSON.stringify(body) })
+        if (res.ok) {
+          const row = await res.json()
+          const r = Array.isArray(row) ? row[0] : row
+          return { id: r.id, content: r.content, author: r.author, timestamp: r.timestamp, likes: r.likes ?? 0, likedBy: r.liked_by ?? [] }
+        }
+      } catch {}
     }
     if (API_URL) {
-      const body = { content: content.trim(), author: author.trim(), timestamp: Date.now() }
-      const res = await fetch(`${API_URL}/messages`, { method: 'POST', headers: headers(), body: JSON.stringify(body) })
-      if (!res.ok) throw new Error('Failed to add message')
-      return await res.json()
+      try {
+        const body = { content: content.trim(), author: author.trim(), timestamp: Date.now() }
+        const res = await fetch(`${API_URL}/messages`, { method: 'POST', headers: headers(), body: JSON.stringify(body) })
+        if (res.ok) {
+          return await res.json()
+        }
+      } catch {}
     }
     return Promise.resolve(MessageStorageService.addMessage(content, author))
   },
 
   async toggleLike(messageId: string, userNickname: string): Promise<void> {
     if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-      const getRes = await fetch(`${SUPABASE_URL}/rest/v1/messages?id=eq.${encodeURIComponent(messageId)}&select=*`, { headers: sbHeaders() })
-      if (!getRes.ok) throw new Error('Failed to load message')
-      const rows = await getRes.json()
-      const r = Array.isArray(rows) ? rows[0] : rows
-      if (!r) return
-      const likedBy: string[] = Array.isArray(r.liked_by) ? r.liked_by : []
-      const idx = likedBy.indexOf(userNickname)
-      if (idx === -1) likedBy.push(userNickname)
-      else likedBy.splice(idx, 1)
-      const likes = likedBy.length
-      const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/messages?id=eq.${encodeURIComponent(messageId)}`, {
-        method: 'PATCH',
-        headers: sbHeaders(),
-        body: JSON.stringify({ liked_by: likedBy, likes })
-      })
-      if (!patchRes.ok) throw new Error('Failed to toggle like')
-      return
+      try {
+        const getRes = await fetch(`${SUPABASE_URL}/rest/v1/messages?id=eq.${encodeURIComponent(messageId)}&select=*`, { headers: sbHeaders() })
+        if (getRes.ok) {
+          const rows = await getRes.json()
+          const r = Array.isArray(rows) ? rows[0] : rows
+          if (!r) return
+          const likedBy: string[] = Array.isArray(r.liked_by) ? r.liked_by : []
+          const idx = likedBy.indexOf(userNickname)
+          if (idx === -1) likedBy.push(userNickname)
+          else likedBy.splice(idx, 1)
+          const likes = likedBy.length
+          const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/messages?id=eq.${encodeURIComponent(messageId)}`, {
+            method: 'PATCH',
+            headers: sbHeaders(),
+            body: JSON.stringify({ liked_by: likedBy, likes })
+          })
+          if (patchRes.ok) return
+        }
+      } catch {}
     }
     if (API_URL) {
-      const res = await fetch(`${API_URL}/messages/${encodeURIComponent(messageId)}/like`, {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify({ nickname: userNickname })
-      })
-      if (!res.ok) throw new Error('Failed to toggle like')
-      return
+      try {
+        const res = await fetch(`${API_URL}/messages/${encodeURIComponent(messageId)}/like`, {
+          method: 'POST',
+          headers: headers(),
+          body: JSON.stringify({ nickname: userNickname })
+        })
+        if (res.ok) return
+      } catch {}
     }
     MessageStorageService.likeMessage(messageId, userNickname)
     return Promise.resolve()
