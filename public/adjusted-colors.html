@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>调整后的星级颜色对比</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .comparison { display: flex; gap: 30px; margin: 20px 0; }
+        .color-scheme { flex: 1; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .color-scheme h3 { text-align: center; margin-bottom: 20px; color: #333; }
+        
+        .star-sample {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* 调整后的颜色方案 */
+        .adjusted-1star {
+            border: 3px solid #2196F3;
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            color: #1565C0;
+        }
+        .adjusted-2star {
+            border: 3px solid #BA68C8;
+            background: linear-gradient(135deg, #F5F0FF 0%, #E1D5F7 100%);
+            color: #8E24AA;
+        }
+        .adjusted-3star {
+            border: 3px solid #FFD700;
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFD700 100%);
+            color: #F57C00;
+        }
+        .adjusted-4star {
+            border: 3px solid #D32F2F;
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            color: #B71C1C;
+        }
+        
+        /* 之前的颜色方案 */
+        .previous-1star {
+            border: 3px solid #2196F3;
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            color: #1565C0;
+        }
+        .previous-2star {
+            border: 3px solid #9C27B0;
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: #6A1B9A;
+        }
+        .previous-3star {
+            border: 3px solid #FFD700;
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFD700 100%);
+            color: #F57C00;
+        }
+        .previous-4star {
+            border: 3px solid #FF5722;
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFCCBC 100%);
+            color: #D32F2F;
+        }
+        
+        .test-links {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .test-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #D84315;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #BF360C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(216, 67, 21, 0.3);
+        }
+        
+        .color-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .color-info h4 {
+            color: #D84315;
+            margin-bottom: 15px;
+        }
+        .color-spec {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .highlight-change {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; color: #D84315; margin-bottom: 30px;">🎨 调整后的星级颜色对比</h1>
+        
+        <div class="comparison">
+            <div class="color-scheme">
+                <h3>🆕 调整后的颜色</h3>
+                <div class="star-sample adjusted-1star">
+                    <div style="font-size: 2rem;">1★</div>
+                    <div>蓝色系 - 保持不变</div>
+                </div>
+                <div class="star-sample adjusted-2star">
+                    <div style="font-size: 2rem;">2★</div>
+                    <div>淡紫色系 - 更淡雅</div>
+                </div>
+                <div class="star-sample adjusted-3star">
+                    <div style="font-size: 2rem;">3★</div>
+                    <div>金色系 - 保持不变</div>
+                </div>
+                <div class="star-sample adjusted-4star">
+                    <div style="font-size: 2rem;">4★</div>
+                    <div>深红色系 - 更红艳</div>
+                </div>
+            </div>
+            
+            <div class="color-scheme">
+                <h3>🔄 之前的颜色</h3>
+                <div class="star-sample previous-1star">
+                    <div style="font-size: 2rem;">1★</div>
+                    <div>蓝色系 - 原色</div>
+                </div>
+                <div class="star-sample previous-2star">
+                    <div style="font-size: 2rem;">2★</div>
+                    <div>深紫色系 - 原色</div>
+                </div>
+                <div class="star-sample previous-3star">
+                    <div style="font-size: 2rem;">3★</div>
+                    <div>金色系 - 原色</div>
+                </div>
+                <div class="star-sample previous-4star">
+                    <div style="font-size: 2rem;">4★</div>
+                    <div>橙红色系 - 原色</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="highlight-change">
+            <h4>🎯 主要调整</h4>
+            <ul>
+                <li><strong>2星紫色更淡：</strong> 从 #9C27B0 调整为 #BA68C8，背景渐变也更淡雅</li>
+                <li><strong>4星更红艳：</strong> 从 #FF5722 调整为 #D32F2F，背景从橙色调调整为红色调</li>
+            </ul>
+        </div>
+        
+        <div class="color-info">
+            <h4>🎨 调整后的颜色规格</h4>
+            <div class="color-spec">
+                <div class="color-box" style="background: #2196F3;"></div>
+                <span><strong>1星：</strong>蓝色 (#2196F3) - 保持清新简洁</span>
+            </div>
+            <div class="color-spec">
+                <div class="color-box" style="background: #BA68C8;"></div>
+                <span><strong>2星：</strong>淡紫色 (#BA68C8) - 更淡雅，减少视觉冲击力</span>
+            </div>
+            <div class="color-spec">
+                <div class="color-box" style="background: #FFD700;"></div>
+                <span><strong>3星：</strong>金色 (#FFD700) - 保持华丽高贵</span>
+            </div>
+            <div class="color-spec">
+                <div class="color-box" style="background: #D32F2F;"></div>
+                <span><strong>4星：</strong>深红色 (#D32F2F) - 更红艳，突出珍贵感</span>
+            </div>
+        </div>
+        
+        <div class="test-links">
+            <h3>🎮 测试抽卡效果</h3>
+            <a href="/4star/gacha" class="test-link">进入抽卡页面</a>
+            <a href="/4star/" class="test-link">返回主页</a>
+        </div>
+    </div>
+</body>
+</html>

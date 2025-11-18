@@ -3,6 +3,7 @@ import Home from './pages/Home.vue'
 import ChampionRank from './pages/ChampionRank.vue'
 import Messages from './pages/Messages.vue'
 import Videos from './pages/Videos.vue'
+import Gacha from './pages/Gacha.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -24,6 +25,11 @@ const routes: RouteRecordRaw[] = [
     path: '/champions',
     name: 'ChampionRank',
     component: ChampionRank
+  },
+  {
+    path: '/gacha',
+    name: 'Gacha',
+    component: Gacha
   }
 ]
 

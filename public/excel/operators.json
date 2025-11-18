@@ -1,0 +1,462 @@
+[
+  {
+    "name": "U-Official",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "12F",
+    "rarity": 2,
+    "class": "未知"
+  },
+  {
+    "name": "斑点",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "冬时",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "Friston-3",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "杜林",
+    "rarity": 2,
+    "class": "未知"
+  },
+  {
+    "name": "泡普卡",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "豆苗",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "PhonoR-0",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "巡林者",
+    "rarity": 2,
+    "class": "未知"
+  },
+  {
+    "name": "月见夜",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "桃金娘",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "Lancet-2",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "黑角",
+    "rarity": 2,
+    "class": "未知"
+  },
+  {
+    "name": "空爆",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "红豆",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "Castle-3",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "夜刀",
+    "rarity": 2,
+    "class": "未知"
+  },
+  {
+    "name": "梓兰",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "清道夫",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "THRM-EX",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "史都华德",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "讯使",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "正义骑士号",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "安赛尔",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "骋风",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "泰拉大陆调查团",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "芙蓉",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "休谟斯",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "CONFESS-47",
+    "rarity": 1,
+    "class": "未知"
+  },
+  {
+    "name": "炎熔",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "石英",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "安德切尔",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "罗小黑",
+    "rarity": 4,
+    "class": "未知"
+  },
+  {
+    "name": "克洛丝",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "杰克",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "米格鲁",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "芳汀",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "卡缇",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "刻刀",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "玫兰莎",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "断罪者",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "翎羽",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "宴",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "香草",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "猎蜂",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "芬",
+    "rarity": 3,
+    "class": "未知"
+  },
+  {
+    "name": "慕斯",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "艾丝黛尔",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "霜叶",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "缠丸",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "杜宾",
+    "rarity": 4,
+    "class": "近卫"
+  },
+  {
+    "name": "跃跃",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "铅踝",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "松果",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "酸糖",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "安比尔",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "梅",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "红云",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "白雪",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "流星",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "杰西卡",
+    "rarity": 4,
+    "class": "狙击"
+  },
+  {
+    "name": "露托",
+    "rarity": 4,
+    "class": "重装"
+  },
+  {
+    "name": "泡泡",
+    "rarity": 4,
+    "class": "重装"
+  },
+  {
+    "name": "坚雷",
+    "rarity": 4,
+    "class": "重装"
+  },
+  {
+    "name": "古米",
+    "rarity": 4,
+    "class": "重装"
+  },
+  {
+    "name": "蛇屠箱",
+    "rarity": 4,
+    "class": "重装"
+  },
+  {
+    "name": "角峰",
+    "rarity": 4,
+    "class": "重装"
+  },
+  {
+    "name": "褐果",
+    "rarity": 4,
+    "class": "医师"
+  },
+  {
+    "name": "清流",
+    "rarity": 4,
+    "class": "医师"
+  },
+  {
+    "name": "苏苏洛",
+    "rarity": 4,
+    "class": "医师"
+  },
+  {
+    "name": "调香师",
+    "rarity": 4,
+    "class": "医师"
+  },
+  {
+    "name": "嘉维尔",
+    "rarity": 4,
+    "class": "医师"
+  },
+  {
+    "name": "末药",
+    "rarity": 4,
+    "class": "医师"
+  },
+  {
+    "name": "罗比菈塔",
+    "rarity": 4,
+    "class": "辅助"
+  },
+  {
+    "name": "波登可",
+    "rarity": 4,
+    "class": "辅助"
+  },
+  {
+    "name": "地灵",
+    "rarity": 4,
+    "class": "辅助"
+  },
+  {
+    "name": "深海色",
+    "rarity": 4,
+    "class": "辅助"
+  },
+  {
+    "name": "协律",
+    "rarity": 4,
+    "class": "辅助"
+  },
+  {
+    "name": "布丁",
+    "rarity": 4,
+    "class": "未知"
+  },
+  {
+    "name": "深靛",
+    "rarity": 4,
+    "class": "术师"
+  },
+  {
+    "name": "卡达",
+    "rarity": 4,
+    "class": "术师"
+  },
+  {
+    "name": "袼雷伊",
+    "rarity": 4,
+    "class": "术师"
+  },
+  {
+    "name": "远山",
+    "rarity": 4,
+    "class": "术师"
+  },
+  {
+    "name": "夜烟",
+    "rarity": 4,
+    "class": "术师"
+  },
+  {
+    "name": "云迹",
+    "rarity": 4,
+    "class": "先锋"
+  },
+  {
+    "name": "维荻",
+    "rarity": 4,
+    "class": "辅助"
+  },
+  {
+    "name": "孑",
+    "rarity": 4,
+    "class": "特种"
+  },
+  {
+    "name": "伊桑",
+    "rarity": 4,
+    "class": "特种"
+  },
+  {
+    "name": "阿消",
+    "rarity": 4,
+    "class": "特种"
+  },
+  {
+    "name": "暗索",
+    "rarity": 4,
+    "class": "特种"
+  },
+  {
+    "name": "砾",
+    "rarity": 4,
+    "class": "特种"
+  }
+]

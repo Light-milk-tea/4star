@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>返回按钮样式对比</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .comparison { display: flex; gap: 20px; margin: 20px 0; }
+        .page-sample { 
+            border: 2px solid #ddd; 
+            padding: 20px; 
+            border-radius: 10px; 
+            background: #f9f9f9;
+            position: relative;
+            min-height: 150px;
+            min-width: 300px;
+        }
+        .title { 
+            text-align: center; 
+            color: #D84315; 
+            margin-bottom: 10px;
+        }
+        .back-home {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            background: #FFF8E1;
+            color: #E65100;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #FFD54F;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        .back-home:hover {
+            background: #FFD54F;
+            color: #E65100;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .status { 
+            text-align: center; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin: 10px 0;
+        }
+        .unified { background: #e8f5e8; color: #2e7d32; }
+        .different { background: #ffeaa7; color: #d63031; }
+        .test-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #D84315;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .test-link:hover {
+            background: #BF360C;
+        }
+    </style>
+</head>
+<body>
+    <h1>返回按钮样式统一测试</h1>
+    
+    <div class="comparison">
+        <div class="page-sample">
+            <h3 class="title">留言页面样式</h3>
+            <a href="/4star/" class="back-home">返回主页</a>
+            <div class="status unified">✅ 标准样式</div>
+            <p>米色背景 + 橙色文字 + 黄色边框</p>
+        </div>
+        
+        <div class="page-sample">
+            <h3 class="title">抽卡页面样式</h3>
+            <a href="/4star/" class="back-home">返回主页</a>
+            <div class="status unified">✅ 统一样式</div>
+            <p>现在使用相同样式</p>
+        </div>
+    </div>
+    
+    <h2>测试链接</h2>
+    <a href="/4star/gacha" class="test-link">进入抽卡页面</a>
+    <a href="/4star/messages" class="test-link">进入留言页面</a>
+    <a href="/4star/champions" class="test-link">进入冠军排行</a>
+    <a href="/4star/videos" class="test-link">进入视频推荐</a>
+    
+    <h2>样式对比说明</h2>
+    <ul>
+        <li>✅ 所有页面现在使用统一的 `.back-home` 类</li>
+        <li>✅ 固定定位在右上角 (top: 1rem, right: 1rem)</li>
+        <li>✅ 相同的颜色方案：米色背景 + 橙色文字 + 黄色边框</li>
+        <li>✅ 相同的悬停效果：背景变黄，轻微上浮</li>
+        <li>✅ 相同的阴影和过渡动画</li>
+    </ul>
+</body>
+</html>

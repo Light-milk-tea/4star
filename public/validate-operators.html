@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>干员数据验证</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .operator { margin: 5px 0; padding: 5px; border-radius: 3px; }
+        .rarity-1 { background: #e0e0e0; }
+        .rarity-2 { background: #c8e6c9; }
+        .rarity-3 { background: #bbdefb; }
+        .rarity-4 { background: #ffe0b2; }
+        .stats { margin: 20px 0; padding: 10px; background: #f5f5f5; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>干员数据验证</h1>
+    <button onclick="loadAndValidate()">加载并验证数据</button>
+    <div id="stats" class="stats"></div>
+    <div id="result"></div>
+    
+    <script>
+        async function loadAndValidate() {
+            try {
+                const response = await fetch('/4star/excel/operators.json');
+                const data = await response.json();
+                
+                // 按星级分类
+                const byRarity = { 1: [], 2: [], 3: [], 4: [] };
+                data.forEach(op => {
+                    byRarity[op.rarity].push(op);
+                });
+                
+                // 显示统计
+                let statsHtml = '<h3>干员统计:</h3>';
+                Object.keys(byRarity).forEach(rarity => {
+                    statsHtml += `<p>${rarity}星: ${byRarity[rarity].length}个</p>`;
+                });
+                document.getElementById('stats').innerHTML = statsHtml;
+                
+                // 检查杰西卡
+                const jessica = data.filter(op => op.name === '杰西卡');
+                let resultHtml = '<h3>杰西卡检查结果:</h3>';
+                if (jessica.length === 0) {
+                    resultHtml += '<p style="color: red;">没有找到杰西卡！</p>';
+                } else if (jessica.length > 1) {
+                    resultHtml += `<p style="color: red;">发现重复的杰西卡！共${jessica.length}个:</p>`;
+                    jessica.forEach(op => {
+                        resultHtml += `<p>${op.rarity}星 - ${op.name} (${op.class})</p>`;
+                    });
+                } else {
+                    resultHtml += `<p style="color: green;">杰西卡正确出现在${jessica[0].rarity}星列表中</p>`;
+                }
+                
+                // 显示各星级的前几个干员
+                Object.keys(byRarity).forEach(rarity => {
+                    resultHtml += `<h4>${rarity}星干员（前5个）:</h4>`;
+                    byRarity[rarity].slice(0, 5).forEach(op => {
+                        resultHtml += `<div class="operator rarity-${rarity}">${op.rarity}星 - ${op.name} (${op.class})</div>`;
+                    });
+                });
+                
+                document.getElementById('result').innerHTML = resultHtml;
+            } catch (error) {
+                document.getElementById('result').innerHTML = '加载失败: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

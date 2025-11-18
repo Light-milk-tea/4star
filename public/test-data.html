@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>抽卡数据测试</title>
+</head>
+<body>
+    <h1>抽卡数据加载测试</h1>
+    <button onclick="testLoad()">测试加载数据</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testLoad() {
+            try {
+                const response = await fetch('/4star/excel/operators.json');
+                const data = await response.json();
+                
+                const stats = {};
+                data.forEach(op => {
+                    if (!stats[op.rarity]) stats[op.rarity] = 0;
+                    stats[op.rarity]++;
+                });
+                
+                let result = '<h3>干员数据统计:</h3>';
+                Object.keys(stats).sort().forEach(rarity => {
+                    result += `<p>${rarity}星干员: ${stats[rarity]}个</p>`;
+                });
+                
+                result += '<h3>前10个干员:</h3>';
+                data.slice(0, 10).forEach(op => {
+                    result += `<p>${op.rarity}星 - ${op.name} (${op.class})</p>`;
+                });
+                
+                document.getElementById('result').innerHTML = result;
+            } catch (error) {
+                document.getElementById('result').innerHTML = '加载失败: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
