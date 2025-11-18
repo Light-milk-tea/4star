@@ -5,7 +5,6 @@ import { loadChampions, Operator } from '../utils/parseChampionExcel'
 const operators = ref<Operator[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
-// 记录哪一行展开了
 const expanded = ref<Set<string>>(new Set())
 
 function toggleRow(name: string) {
@@ -28,211 +27,378 @@ onMounted(async () => {
 
 <template>
   <div class="page">
-    <h1 class="title">合约冠军数排行（纯四星）</h1>
-    <router-link to="/" class="back-home">返回主页</router-link>
-
-    <div class="rank-container">
-      <div v-if="loading" style="padding:1rem;text-align:center;color:#5D4037;">加载中…</div>
-      <div v-else-if="error" style="padding:1rem;text-align:center;color:#d32f2f;">加载失败：{{ error }}</div>
-      <table class="rank-table">
-        <colgroup>
-          <col style="width:80px" />
-          <col style="width:40%" />
-          <col style="width:120px" />
-          <col style="width:100px" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th>排名</th>
-            <th>干员名称</th>
-            <th>冠军总数</th>
-            <th>查看</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="(op, index) in operators" :key="op.name">
-            <tr>
-              <td class="rank-number">{{ index + 1 }}</td>
-              <td class="operator-name">{{ op.name }}</td>
-              <td class="champion-count">{{ op.championCount }}</td>
-              <td>
-                <button class="view-btn" @click="toggleRow(op.name)">
-                  {{ expanded.has(op.name) ? '收起' : '查看' }}
-                </button>
-              </td>
-            </tr>
-            <!-- 展开行 -->
-            <tr v-if="expanded.has(op.name)" class="detail-row">
-              <td colspan="4">
-                <div class="titles-box">
-                  <div class="titles-title">获得冠军：</div>
-                  <div class="tags">
-                    <span v-for="t in op.titles" :key="t" class="tag">{{ t }}</span>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </template>
-          <tr v-if="!loading && !error && operators.length === 0">
-            <td colspan="4" style="text-align:center;color:#5D4037;padding:1rem;">暂无数据</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">四星干员冠军排行</h1>
+        <p class="page-subtitle">纯四星队合约统计</p>
+      </div>
+      
+      <div class="content-card">
+        <div v-if="loading" class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>加载中...</p>
+        </div>
+        
+        <div v-else-if="error" class="error-state">
+          <div class="error-icon">⚠️</div>
+          <p>加载失败：{{ error }}</p>
+        </div>
+        
+        <div v-else-if="operators.length === 0" class="empty-state">
+          <div class="empty-icon">📊</div>
+          <p>暂无数据</p>
+        </div>
+        
+        <div v-else class="rank-table-container">
+          <div class="table-wrapper">
+            <table class="rank-table">
+              <thead>
+                <tr>
+                  <th class="rank-col">排名</th>
+                  <th class="name-col">干员名称</th>
+                  <th class="count-col">冠军总数</th>
+                  <th class="action-col">详情</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="(op, index) in operators" :key="op.name">
+                  <tr class="rank-row" :class="{ 'top-4': index < 4 }">
+                    <td class="rank-number">
+                      <span class="rank-badge" :class="{ 'gold': index === 0, 'silver': index === 1, 'bronze': index === 2, 'fourth': index === 3 }">
+                        {{ index + 1 }}
+                      </span>
+                    </td>
+                    <td class="operator-name">{{ op.name }}</td>
+                    <td class="champion-count">{{ op.championCount }}</td>
+                    <td class="action-cell">
+                      <button class="detail-btn" @click="toggleRow(op.name)">
+                        <span class="btn-text">{{ expanded.has(op.name) ? '收起' : '展开' }}</span>
+                        <span class="btn-icon" :class="{ 'rotated': expanded.has(op.name) }">▼</span>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr v-if="expanded.has(op.name)" class="detail-row">
+                    <td colspan="4">
+                      <div class="detail-content">
+                        <div class="detail-header">
+                          <h4 class="detail-title">获得冠军</h4>
+                        </div>
+                        <div class="tags-container">
+                          <span v-for="title in op.titles" :key="title" class="title-tag">
+                            {{ title }}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
+  padding: var(--space-8) 0;
+}
+
+.container {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.page-title {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  color: var(--gray-800);
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: var(--text-lg);
+  color: var(--gray-600);
+  font-weight: var(--font-medium);
+}
+
+.content-card {
+  background: linear-gradient(180deg, var(--white) 0%, var(--gray-50) 100%);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   align-items: center;
-  padding-top: 10vh;
-  background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+  justify-content: center;
+  padding: var(--space-16);
+  gap: var(--space-4);
+  color: var(--gray-500);
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #E65100;
-  margin-bottom: 2rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--gray-200);
+  border-top: 2px solid var(--accent-600);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.back-home {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  background: #FFF8E1;
-  color: #E65100;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border: 1px solid #FFD54F;
-  transition: all 0.3s ease;
-}
-.back-home:hover {
-  background: #FFD54F;
-  color: #E65100;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+.error-icon,
+.empty-icon {
+  font-size: var(--text-4xl);
+  opacity: 0.7;
 }
 
-.rank-container {
-  width: 80%;
-  max-width: 1000px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+.table-wrapper {
   overflow-x: auto;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 213, 79, 0.3);
 }
 
 .rank-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  font-size: var(--text-sm);
 }
 
 .rank-table th {
-  background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
-  color: #5D4037;
-  padding: 1rem;
-  text-align: center;
-  font-weight: 600;
-  font-size: 1.1rem;
+  background: linear-gradient(180deg, var(--primary-50) 0%, var(--white) 100%);
+  color: var(--gray-700);
+  padding: var(--space-4);
+  text-align: left;
+  font-weight: var(--font-semibold);
+  border-bottom: 1px solid var(--gray-200);
   white-space: nowrap;
-  border-bottom: 2px solid #FFA000;
 }
 
-.rank-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #FFE0B2;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+.rank-table th.rank-col {
+  text-align: center;
+  width: 5rem;
 }
 
-.rank-table tr:nth-child(even) {
-  background: #FFFDE7;
+.rank-table th.count-col {
+  text-align: center;
+  width: 6rem;
 }
 
-.rank-table tr:hover {
-  background: #FFF9C4;
+.rank-table th.action-col {
+  text-align: center;
+  width: 5rem;
+}
+
+.rank-row {
+  border-bottom: 1px solid var(--gray-100);
+  transition: var(--transition-fast);
+}
+
+.rank-row:hover {
+  background: linear-gradient(90deg, var(--gray-50) 0%, var(--white) 100%);
+}
+
+.rank-row.top-4 {
+  background: linear-gradient(135deg, var(--accent-50) 0%, var(--white) 100%);
+  border-left: 4px solid var(--accent-600);
+}
+
+.rank-row:nth-of-type(even) {
+  background: var(--gray-50);
+}
+
+.rank-row td {
+  padding: var(--space-4);
+  vertical-align: middle;
 }
 
 .rank-number {
-  font-weight: 600;
-  color: #F57C00;
-  width: 80px;
-}
-
-.operator-name {
-  font-weight: 500;
-  color: #5D4037;
-}
-
-.champion-count {
-  font-weight: 600;
-  color: #E65100;
   text-align: center;
 }
 
-/* 查看按钮 */
-.view-btn {
-  background: linear-gradient(135deg, #FFB74D 0%, #FFA726 100%);
-  color: #5D4037;
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-bold);
+  font-size: var(--text-sm);
+  color: var(--white);
+  background: var(--gray-400);
+}
+
+.rank-badge.gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+}
+
+.rank-badge.silver {
+  background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
+  box-shadow: 0 2px 8px rgba(156, 163, 175, 0.3);
+}
+
+.rank-badge.bronze {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.rank-badge.fourth {
+  background: linear-gradient(135deg, var(--accent-400) 0%, var(--accent-600) 100%);
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+}
+
+.operator-name {
+  font-weight: var(--font-medium);
+  color: var(--gray-800);
+}
+
+.rank-row.top-4 .operator-name {
+  font-weight: var(--font-semibold);
+  color: var(--gray-900);
+}
+
+.champion-count {
+  text-align: center;
+  font-weight: var(--font-semibold);
+  color: var(--accent-600);
+  font-size: var(--text-lg);
+}
+
+.detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--accent-600);
+  color: var(--white);
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 500;
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: var(--transition-fast);
+  white-space: nowrap;
 }
-.view-btn:hover {
-  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+
+.detail-btn:hover {
+  background: var(--accent-700);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* 展开详情行 */
+.btn-icon {
+  font-size: var(--text-xs);
+  transition: var(--transition-fast);
+}
+
+.btn-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.detail-row {
+  background: var(--accent-50);
+  border-bottom: 1px solid var(--gray-200);
+}
+
 .detail-row td {
-  background: #FFF8E1;
-  padding: 0.8rem 1rem;
-  overflow-wrap: anywhere;
-  border-bottom: 2px solid #FFD54F;
+  padding: 0;
 }
 
-.titles-box {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.detail-content {
+  padding: var(--space-6);
 }
-.titles-title {
-  font-weight: 600;
-  color: #E65100;
-  font-size: 0.95rem;
+
+.detail-header {
+  margin-bottom: var(--space-4);
 }
-.tags {
+
+.detail-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--gray-800);
+}
+
+.tags-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
-.tag {
-  background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
-  color: #5D4037;
-  font-size: 0.85rem;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border: 1px solid rgba(255, 167, 38, 0.3);
+
+.title-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--white);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  transition: var(--transition-fast);
+}
+
+.title-tag:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-300);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page {
+    padding: var(--space-4) 0;
+  }
+  
+  .page-title {
+    font-size: var(--text-3xl);
+  }
+  
+  .rank-table {
+    font-size: var(--text-xs);
+  }
+  
+  .rank-table th,
+  .rank-row td {
+    padding: var(--space-3) var(--space-2);
+  }
+  
+  .detail-content {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .rank-table th.rank-col,
+  .rank-table th.action-col {
+    width: 4rem;
+  }
+  
+  .rank-table th.count-col {
+    width: 5rem;
+  }
+  
+  .detail-btn {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+  }
 }
 </style>

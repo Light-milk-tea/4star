@@ -1,36 +1,59 @@
 <template>
   <div class="page">
-    <h1 class="title">主编视频推荐</h1>
-    <router-link to="/" class="back-home">返回主页</router-link>
-    <div class="content">
-      <div class="list">
-        <a
-          v-for="(v, i) in list"
-          :key="i"
-          :href="v.href"
-          class="card"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img v-if="v.cover" :src="imgSrc(v.cover)" alt="" class="card-cover" @error="onCoverError(i)" />
-          <div class="card-icon">🎬</div>
-          <div class="card-title">{{ v.title }}</div>
-          <div class="card-desc">{{ v.desc || (v.bv ? `BV：${v.bv}` : v.href) }}</div>
-        </a>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">主编视频推荐</h1>
+        <p class="page-subtitle">精选四星队相关视频</p>
       </div>
-      <p class="hint">支持 BV 号或超链接，点击卡片跳转到相应视频。</p>
+      
+      <div class="content-card">
+        <div class="video-grid">
+          <a
+            v-for="(v, i) in list"
+            :key="i"
+            :href="v.href"
+            class="video-card"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div class="video-cover-wrapper">
+              <img 
+                v-if="v.cover" 
+                :src="imgSrc(v.cover)" 
+                alt="" 
+                class="video-cover" 
+                @error="onCoverError(i)" 
+              />
+              <div v-else class="video-cover-placeholder">
+                <span class="video-icon">🎬</span>
+              </div>
+            </div>
+            <div class="video-info">
+              <h3 class="video-title">{{ v.title }}</h3>
+              <p class="video-desc">{{ v.desc || (v.bv ? `BV：${v.bv}` : v.href) }}</p>
+            </div>
+          </a>
+        </div>
+        
+        <div class="hint-box">
+          <p class="hint-text">支持 BV 号或超链接，点击卡片跳转到相应视频。</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 type RawVideo = { title: string; desc?: string; bv?: string; url?: string; cover?: string }
 type Item = RawVideo & { href: string }
 
 const raw: RawVideo[] = [
-  { title: '示例：BV1541oBcEKx', desc: 'b站演示视频', bv: 'BV1541oBcEKx' }
+  { title: 'BV：BV1DL5TzxEnH', bv: 'BV1DL5TzxEnH' },
+  { title: 'BV：BV14CaQzoEdm', bv: 'BV14CaQzoEdm' },
+  { title: 'BV：BV1WQMWz5E15', bv: 'BV1WQMWz5E15' },
+  { title: 'BV：BV1YVqCYCECh', bv: 'BV1YVqCYCECh' }
 ]
 
 const list = ref<Item[]>(
@@ -40,14 +63,39 @@ const list = ref<Item[]>(
   }))
 )
 
+const storageKey = 'videos.list'
+const coverRetry: Record<number, number> = {}
+const blockedBVs = new Set<string>(['BV1541oBcEKx'])
+
 onMounted(async () => {
+  try {
+    const s = localStorage.getItem(storageKey)
+    if (s) {
+      const arr = JSON.parse(s) as RawVideo[]
+      if (Array.isArray(arr)) {
+        const mapped = arr.map((v) => toItem(v))
+        list.value = mapped.length ? mapped : list.value
+      }
+    }
+  } catch {}
+  const defaults = raw.map((v) => toItem(v))
+  for (const d of defaults) {
+    if (!list.value.some((x) => x.href === d.href)) {
+      list.value.unshift(d)
+    }
+  }
+  list.value = list.value.filter((v) => !v.bv || !blockedBVs.has(v.bv))
   const tasks = list.value.map(async (v, i) => {
     if (v.bv) {
       try {
         const res = await fetch(`/api-bili/x/web-interface/view?bvid=${v.bv}`)
         const data = await res.json()
         const pic = data?.data?.pic as string | undefined
+        const title = data?.data?.title as string | undefined
+        const up = data?.data?.owner?.name as string | undefined
         if (pic) list.value[i].cover = normalizeCover(pic)
+        if (title) list.value[i].title = title
+        if (up) list.value[i].desc = up
       } catch {}
       if (!list.value[i].cover) {
         try {
@@ -58,8 +106,18 @@ onMounted(async () => {
             doc.querySelector('meta[property="og:image"]') ||
             doc.querySelector('meta[itemprop="image"]') ||
             doc.querySelector('meta[name="og:image"]')
+          const mt =
+            doc.querySelector('meta[property="og:title"]') ||
+            doc.querySelector('meta[name="og:title"]')
+          const ma =
+            doc.querySelector('meta[itemprop="author"]') ||
+            doc.querySelector('meta[name="author"]')
           const content = m?.getAttribute('content') || ''
+          const contentTitle = mt?.getAttribute('content') || doc.querySelector('title')?.textContent || ''
+          const author = ma?.getAttribute('content') || ''
           if (content) list.value[i].cover = normalizeCover(content)
+          if (contentTitle) list.value[i].title = contentTitle.trim()
+          if (author) list.value[i].desc = author.trim()
         } catch {}
       }
     }
@@ -68,13 +126,14 @@ onMounted(async () => {
     }
   })
   await Promise.all(tasks)
+  save()
 })
 
 function normalizeCover(u: string): string {
   try {
     const url = new URL(u)
+    url.protocol = 'https:'
     if (url.hostname.endsWith('hdslb.com')) {
-      url.protocol = 'https:'
       url.hostname = 'i0.hdslb.com'
     }
     return url.toString()
@@ -86,96 +145,230 @@ function normalizeCover(u: string): string {
 function imgSrc(u: string): string {
   try {
     const url = new URL(u)
-    if (url.hostname === 'i0.hdslb.com') {
+    if (url.hostname.endsWith('hdslb.com')) {
       return `/img-bili${url.pathname}`
     }
-    return u
+    return url.toString()
   } catch {
     return u
   }
 }
 
 function onCoverError(i: number) {
+  try {
+    const u = new URL(list.value[i].cover || '')
+    if (u.hostname.endsWith('hdslb.com')) {
+      const n = (coverRetry[i] || 0) + 1
+      coverRetry[i] = n
+      const hosts = ['i0.hdslb.com', 'i1.hdslb.com', 'i2.hdslb.com']
+      u.hostname = hosts[n % hosts.length]
+      list.value[i].cover = u.toString()
+      return
+    }
+  } catch {}
   list.value[i].cover = `https://picsum.photos/seed/${list.value[i].bv || i}/640/360`
 }
+
+function toItem(v: RawVideo): Item {
+  return { ...v, href: v.url ? v.url : v.bv ? `https://www.bilibili.com/video/${v.bv}` : '#' }
+}
+
+ 
+
+ 
+
+function save() {
+  try {
+    const arr: RawVideo[] = list.value
+      .filter((v) => !v.bv || !blockedBVs.has(v.bv))
+      .map((v) => ({ title: v.title, desc: v.desc, bv: v.bv, url: v.url, cover: v.cover }))
+    localStorage.setItem(storageKey, JSON.stringify(arr))
+  } catch {}
+}
+
+watch(list, save, { deep: true })
 </script>
 
 <style scoped>
 .page {
   min-height: 100vh;
+  background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
+  padding: var(--space-8) 0;
+}
+
+.container {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.page-title {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  color: var(--gray-800);
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: var(--text-lg);
+  color: var(--gray-600);
+  font-weight: var(--font-medium);
+}
+
+.content-card {
+  background: var(--white);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-6);
+  padding: var(--space-8);
+}
+
+.video-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-normal);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--accent-300);
+}
+
+.video-cover-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+}
+
+.video-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-normal);
+}
+
+.video-card:hover .video-cover {
+  transform: scale(1.05);
+}
+
+.video-cover-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+  background: linear-gradient(135deg, var(--accent-100) 0%, var(--accent-200) 100%);
 }
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #E65100;
-  margin-bottom: 1rem;
-}
-.back-home {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  background: #FFF8E1;
-  color: #E65100;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border: 1px solid #FFD54F;
-}
-.content {
-  width: 80%;
-  max-width: 860px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 16px;
-  border: 1px solid rgba(255,213,79,0.3);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  padding: 1.2rem 1.4rem;
-}
-.list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(220px, 280px));
-  gap: 1.1rem;
-  margin-bottom: 0.8rem;
-}
-.card {
-  display: block;
-  padding: 1.1rem 1.3rem;
-  border-radius: 16px;
-  text-decoration: none;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(255, 213, 79, 0.45);
-  box-shadow: 0 12px 26px rgba(0,0,0,0.09);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  color: #5D4037;
-}
-.card-cover {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 0.6rem;
-  display: block;
-}
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 30px rgba(0,0,0,0.12);
-  border-color: #FFA000;
-}
-.card-icon { font-size: 1.3rem; margin-bottom: 0.3rem; }
-.card-title { font-size: 1.15rem; font-weight: 700; color: #E65100; margin-bottom: 0.25rem; }
-.card-desc { font-size: 0.95rem; color: #5D4037; }
-.hint { color: #5D4037; font-size: 0.95rem; }
 
-@media (max-width: 900px) {
-  .list { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
+.video-icon {
+  font-size: 3rem;
+  opacity: 0.7;
 }
-@media (max-width: 640px) {
-  .list { grid-template-columns: 1fr; }
+
+.video-info {
+  padding: var(--space-4);
+  background: var(--white);
+}
+
+.video-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--gray-800);
+  margin-bottom: var(--space-2);
+  line-height: var(--leading-snug);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.video-desc {
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+  line-height: var(--leading-relaxed);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hint-box {
+  padding: var(--space-6) var(--space-8);
+  background: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+  text-align: center;
+}
+
+.hint-text {
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page {
+    padding: var(--space-4) 0;
+  }
+  
+  .page-title {
+    font-size: var(--text-3xl);
+  }
+  
+  .video-grid {
+    grid-template-columns: 1fr;
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+  
+  .hint-box {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: var(--text-2xl);
+  }
+  
+  .video-info {
+    padding: var(--space-3);
+  }
+  
+  .video-title {
+    font-size: var(--text-base);
+  }
+  
+  .video-desc {
+    font-size: var(--text-xs);
+  }
 }
 </style>

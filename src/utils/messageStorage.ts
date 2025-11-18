@@ -9,10 +9,10 @@ export class MessageStorageService {
       return JSON.parse(stored)
     }
     
-    const defaultStorage: MessageStorage = {
+  const defaultStorage: MessageStorage = {
       messages: [],
       userProfile: {
-        nickname: '小火苗'
+        nickname: '不好吃的好吃'
       }
     }
     

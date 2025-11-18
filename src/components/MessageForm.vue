@@ -40,14 +40,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { MessageStorageService } from '@/utils/messageStorage'
+import { MessageService } from '@/utils/messageService'
 
 const emit = defineEmits<{
   messageAdded: [message: any]
 }>()
 
 const content = ref('')
-const nickname = ref(MessageStorageService.getUserProfile().nickname)
+const nickname = ref(MessageService.getUserProfile().nickname)
 
 const canSubmit = computed(() => {
   return content.value.trim().length > 0 && nickname.value.trim().length > 0
@@ -55,18 +55,13 @@ const canSubmit = computed(() => {
 
 const updateNickname = () => {
   if (nickname.value.trim()) {
-    MessageStorageService.updateUserProfile({ nickname: nickname.value.trim() })
+    MessageService.updateUserProfile({ nickname: nickname.value.trim() })
   }
 }
 
-const submitMessage = () => {
+const submitMessage = async () => {
   if (!canSubmit.value) return
-  
-  const message = MessageStorageService.addMessage(
-    content.value.trim(),
-    nickname.value.trim()
-  )
-  
+  const message = await MessageService.addMessage(content.value.trim(), nickname.value.trim())
   content.value = ''
   emit('messageAdded', message)
 }

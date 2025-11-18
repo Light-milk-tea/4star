@@ -1,118 +1,120 @@
 <template>
-  <div class="gacha-page">
-    <div class="gacha-container">
-      <div class="gacha-header">
-        <router-link to="/" class="back-home">返回主页</router-link>
-        <h1 class="gacha-title">四星队模拟抽卡</h1>
-        <p class="gacha-subtitle">测试你的欧气！</p>
+  <div class="page-container">
+    <div class="content-wrapper">
+      <div class="page-header">
+        <router-link to="/" class="btn btn-secondary">
+          <span class="btn-icon">←</span>
+          返回主页
+        </router-link>
+        <h1 class="page-title">四星队模拟抽卡</h1>
+        <p class="page-subtitle">测试你的欧气！</p>
       </div>
 
-      <div class="gacha-stats">
-        <div class="stat-item">
-          <span class="stat-label">总抽取次数</span>
-          <span class="stat-value">{{ totalPulls }}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">四星获得</span>
-          <span class="stat-value">{{ fourStarCount }}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">四星概率</span>
-          <span class="stat-value">{{ fourStarRate }}%</span>
-        </div>
-        <div class="stat-item" v-if="pullsSinceLast4Star >= 40">
-          <span class="stat-label">保底进度</span>
-          <span class="stat-value">{{ pullsSinceLast4Star }}/50</span>
-        </div>
-      </div>
-
-      <div class="pity-warning" v-if="pullsSinceLast4Star >= 40">
-        <div class="warning-icon">⚠️</div>
-        <div class="warning-text">
-          保底机制已激活！当前4星概率已提升至 {{ current4StarRate }}%
-          <span v-if="pullsSinceLast4Star >= 50">（每抽+2%）</span>
-        </div>
-      </div>
-
-      <div class="gacha-display">
-        <div class="result-area" v-if="currentResults.length > 0">
-          <div class="result-grid" v-if="currentResults.length > 1">
-            <div 
-              v-for="(result, index) in currentResults" 
-              :key="result.id"
-              class="result-card result-card-small" 
-              :class="`rarity-${result.rarity}`"
-              :style="{ animationDelay: `${index * 0.05}s` }"
-            >
-              <div class="result-rarity">{{ result.rarity }}★</div>
-              <div class="result-name">{{ result.name }}</div>
-              <div class="result-class">{{ result.class }}</div>
-            </div>
+      <div class="card">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">总抽取次数</div>
+            <div class="stat-value">{{ totalPulls }}</div>
           </div>
-          <div class="result-card-wrapper" v-else>
-            <div class="result-card" :class="`rarity-${currentResults[0].rarity}`">
-              <div class="result-rarity">{{ currentResults[0].rarity }}★</div>
-              <div class="result-name">{{ currentResults[0].name }}</div>
-              <div class="result-class">{{ currentResults[0].class }}</div>
-            </div>
+          <div class="stat-item">
+            <div class="stat-label">四星获得</div>
+            <div class="stat-value">{{ fourStarCount }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">四星概率</div>
+            <div class="stat-value">{{ fourStarRate }}%</div>
+          </div>
+          
+        </div>
+
+        <div class="alert alert-warning" v-if="pullsSinceLast4Star >= 40">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            保底机制已激活！当前4星概率已提升至 {{ current4StarRate }}%
+            <span v-if="pullsSinceLast4Star >= 50">（每抽+2%）</span>
           </div>
         </div>
-        
-        <div class="placeholder" v-else>
-          <div class="placeholder-text">点击抽卡开始</div>
+
+        <div class="gacha-display">
+          <div class="result-area" v-if="currentResults.length > 0">
+            <div class="result-grid" v-if="currentResults.length > 1">
+              <div 
+                v-for="(result, index) in currentResults" 
+                :key="result.id"
+                class="result-card result-card-small" 
+                :class="`rarity-${result.rarity}`"
+                :style="{ animationDelay: `${index * 0.05}s` }"
+              >
+                <div class="result-rarity">{{ result.rarity }}★</div>
+                <div class="result-name">{{ result.name }}</div>
+                <div class="result-class">{{ result.class }}</div>
+              </div>
+            </div>
+            <div class="result-card-wrapper" v-else>
+              <div class="result-card" :class="`rarity-${currentResults[0].rarity}`">
+                <div class="result-rarity">{{ currentResults[0].rarity }}★</div>
+                <div class="result-name">{{ currentResults[0].name }}</div>
+                <div class="result-class">{{ currentResults[0].class }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="placeholder" v-else>
+            <div class="placeholder-text">点击抽卡开始</div>
+          </div>
         </div>
-      </div>
 
-      <div class="gacha-controls">
-        <button 
-          class="pull-button single-pull" 
-          @click="doPull(1)"
-          :disabled="isPulling"
-        >
-          单抽
-        </button>
-        <button 
-          class="pull-button multi-pull" 
-          @click="doPull(10)"
-          :disabled="isPulling"
-        >
-          十连抽
-        </button>
-      </div>
-
-      <div class="history-section" v-if="history.length > 0">
-        <h3 class="history-title">抽卡历史</h3>
-        <div class="history-list">
-          <div 
-            v-for="(item, index) in history.slice(-10)" 
-            :key="index"
-            class="history-item"
-            :class="`rarity-${item.rarity}`"
+        <div class="button-group">
+          <button 
+            class="btn btn-primary" 
+            @click="doPull(1)"
+            :disabled="isPulling"
           >
-            <span class="history-rarity">{{ item.rarity }}★</span>
-            <span class="history-name">{{ item.name }}</span>
+            单抽
+          </button>
+          <button 
+            class="btn btn-accent" 
+            @click="doPull(10)"
+            :disabled="isPulling"
+          >
+            十连抽
+          </button>
+        </div>
+
+        <div class="history-section" v-if="history.length > 0">
+          <h3 class="section-title">抽卡历史</h3>
+          <div class="history-list">
+            <div 
+              v-for="(item, index) in history.slice(-10)" 
+              :key="index"
+              class="history-item"
+              :class="`rarity-${item.rarity}`"
+            >
+              <span class="history-rarity">{{ item.rarity }}★</span>
+              <span class="history-name">{{ item.name }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="probability-info">
-        <h4>概率说明</h4>
-        <div class="prob-list">
-          <div class="prob-item">
-            <span class="prob-rarity" data-rarity="1">1★</span>
-            <span class="prob-value">38%</span>
-          </div>
-          <div class="prob-item">
-            <span class="prob-rarity" data-rarity="2">2★</span>
-            <span class="prob-value">50%</span>
-          </div>
-          <div class="prob-item">
-            <span class="prob-rarity" data-rarity="3">3★</span>
-            <span class="prob-value">10%</span>
-          </div>
-          <div class="prob-item">
-            <span class="prob-rarity" data-rarity="4">4★</span>
-            <span class="prob-value">2%</span>
+        <div class="probability-info">
+          <h4 class="section-title">概率说明</h4>
+          <div class="prob-list">
+            <div class="prob-item">
+              <span class="prob-rarity" data-rarity="1">1★</span>
+              <span class="prob-value">38%</span>
+            </div>
+            <div class="prob-item">
+              <span class="prob-rarity" data-rarity="2">2★</span>
+              <span class="prob-value">50%</span>
+            </div>
+            <div class="prob-item">
+              <span class="prob-rarity" data-rarity="3">3★</span>
+              <span class="prob-value">10%</span>
+            </div>
+            <div class="prob-item">
+              <span class="prob-rarity" data-rarity="4">4★</span>
+              <span class="prob-value">2%</span>
+            </div>
           </div>
         </div>
       </div>
@@ -300,115 +302,52 @@ function pullOnce(): PullResult {
 </script>
 
 <style scoped>
-.gacha-page {
+.page-container {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #FFF8E1;
-  padding: 2rem;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
 }
 
-.header-top {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-}
-
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.8);
-  border: 2px solid #D84315;
-  border-radius: 8px;
-  color: #D84315;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.back-button:hover {
-  background: #D84315;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(216, 67, 21, 0.3);
-}
-
-/* 可选：绝对定位的返回按钮 */
-.back-button-absolute {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 10;
-}
-
-.back-icon {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.gacha-container {
-  width: 100%;
+.content-wrapper {
   max-width: 800px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  padding: 3rem;
-  backdrop-filter: blur(12px);
+  margin: 0 auto;
 }
 
-.gacha-header {
+.page-header {
   text-align: center;
   margin-bottom: 2rem;
   position: relative;
 }
 
-.back-home {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  background: #FFF8E1;
-  color: #E65100;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border: 1px solid #FFD54F;
-  z-index: 100;
-  transition: all 0.3s ease;
-}
-
-.back-home:hover {
-  background: #FFD54F;
-  color: #E65100;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-
-.gacha-title {
+.page-title {
   font-size: 2.5rem;
-  font-weight: 800;
-  color: #D84315;
+  font-weight: 700;
+  color: var(--gray-900);
   margin-bottom: 0.5rem;
 }
 
-.gacha-subtitle {
+.page-subtitle {
   font-size: 1.2rem;
-  color: #6D4C41;
-  opacity: 0.8;
+  color: var(--gray-600);
+  margin-bottom: 1rem;
 }
 
-.gacha-stats {
-  display: flex;
-  justify-content: space-around;
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
   margin-bottom: 2rem;
-  background: rgba(255, 193, 7, 0.1);
   padding: 1.5rem;
-  border-radius: 16px;
+  background: var(--primary-50);
+  border-radius: var(--radius-md);
 }
 
 .stat-item {
@@ -416,17 +355,36 @@ function pullOnce(): PullResult {
 }
 
 .stat-label {
-  display: block;
   font-size: 0.9rem;
-  color: #6D4C41;
+  color: var(--gray-600);
   margin-bottom: 0.5rem;
 }
 
 .stat-value {
-  display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #D84315;
+  color: var(--accent-600);
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 2rem;
+  border: 1px solid var(--warning-200);
+  background: var(--warning-50);
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.alert-content {
+  font-weight: 500;
+  color: var(--warning-800);
 }
 
 .gacha-display {
@@ -439,26 +397,12 @@ function pullOnce(): PullResult {
 
 .placeholder {
   text-align: center;
-  color: #6D4C41;
-  opacity: 0.6;
+  color: var(--gray-500);
 }
 
 .placeholder-text {
   font-size: 1.1rem;
-  text-align: center;
-  color: #6D4C41;
-  opacity: 0.8;
   font-weight: 500;
-}
-
-.result-card {
-  background: white;
-  padding: 2rem 3rem;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  border: 3px solid;
-  animation: fadeInUp 0.5s ease-out;
 }
 
 .result-grid {
@@ -469,21 +413,30 @@ function pullOnce(): PullResult {
   max-width: 800px;
 }
 
+.result-card {
+  background: var(--white);
+  padding: 2rem 3rem;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid;
+  animation: fadeInUp 0.5s ease-out;
+}
+
 .result-card-small {
   padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  border-width: 2px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border-width: 1px;
   animation: fadeInUp 0.3s ease-out both;
 }
 
 .result-card-small.rarity-4 {
-  border-color: #F44336;
-  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 30%, #EF9A9A 60%, #E57373 100%);
-  box-shadow: 0 6px 20px rgba(244, 67, 54, 0.3), 0 0 25px rgba(211, 47, 47, 0.15);
-  border-width: 3px;
+  border-color: #ff5a36;
+  background: linear-gradient(135deg, #fff0f0 0%, #ffd9c2 50%, #ffb38a 100%);
+  box-shadow: var(--shadow-md), 0 0 20px rgba(255, 74, 36, 0.25);
+  border-width: 2px;
   animation: float 3s ease-in-out infinite;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .result-card-small .result-rarity {
@@ -492,37 +445,30 @@ function pullOnce(): PullResult {
 }
 
 .result-card-small.rarity-4 .result-rarity {
-  background: linear-gradient(45deg, #FF1744, #FF5252, #FF8A80);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 15px rgba(255, 23, 68, 0.6), 0 0 30px rgba(255, 82, 82, 0.4);
-  font-weight: 900;
-  animation: textGlow 2s ease-in-out infinite alternate;
+  color: #ff4a24;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(255, 74, 36, 0.35);
 }
 
 .result-card-small .result-name {
   font-size: 0.9rem;
   margin-bottom: 0.2rem;
+  font-weight: 600;
 }
 
 .result-card-small.rarity-4 .result-name {
-  background: linear-gradient(45deg, #B71C1C, #D32F2F);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #c84a1a;
   font-weight: 700;
-  text-shadow: 0 0 8px rgba(183, 28, 28, 0.3);
 }
 
 .result-card-small .result-class {
   font-size: 0.8rem;
+  color: var(--gray-600);
 }
 
 .result-card-small.rarity-4 .result-class {
-  color: #BF360C;
-  font-weight: 600;
-  text-shadow: 0 0 4px rgba(191, 54, 12, 0.2);
+  color: #ff4a24;
+  font-weight: 500;
 }
 
 .result-card-wrapper {
@@ -532,24 +478,24 @@ function pullOnce(): PullResult {
 }
 
 .result-card.rarity-1 {
-  border-color: #2196F3;
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-color: var(--accent-600);
+  background: linear-gradient(135deg, var(--accent-50) 0%, var(--accent-100) 100%);
 }
 
 .result-card.rarity-2 {
-  border-color: #BA68C8;
-  background: linear-gradient(135deg, #F5F0FF 0%, #E1D5F7 100%);
+  border-color: var(--purple-500);
+  background: linear-gradient(135deg, var(--purple-50) 0%, var(--purple-100) 100%);
 }
 
 .result-card.rarity-3 {
-  border-color: #FFD700;
-  background: linear-gradient(135deg, #FFF8DC 0%, #FFD700 100%);
+  border-color: var(--warning);
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
 }
 
 .result-card.rarity-4 {
-  border-color: #D32F2F;
-  background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 25%, #EF9A9A 50%, #E57373 75%, #F44336 100%);
-  box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4), 0 0 40px rgba(211, 47, 47, 0.2);
+  border-color: #ff5a36;
+  background: linear-gradient(135deg, #fff0f0 0%, #ffd9c2 50%, #ffb38a 100%);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(255, 74, 36, 0.35);
   position: relative;
   overflow: hidden;
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -562,9 +508,9 @@ function pullOnce(): PullResult {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 200, 150, 0.5), transparent);
   animation: shimmer 6s ease-in-out infinite;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .result-rarity {
@@ -573,109 +519,52 @@ function pullOnce(): PullResult {
   margin-bottom: 0.5rem;
 }
 
-.result-card.rarity-1 .result-rarity { color: #1565C0; text-shadow: 0 2px 4px rgba(33, 150, 243, 0.3); }
-.result-card.rarity-2 .result-rarity { color: #8E24AA; text-shadow: 0 2px 4px rgba(186, 104, 200, 0.3); }
-.result-card.rarity-3 .result-rarity { color: #F57C00; text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3); }
+.result-card.rarity-1 .result-rarity { color: var(--accent-700); }
+.result-card.rarity-2 .result-rarity { color: var(--purple-600); }
+.result-card.rarity-3 .result-rarity { color: var(--warning); }
 .result-card.rarity-4 .result-rarity { 
-  background: linear-gradient(45deg, #FF1744, #FF5252, #FF8A80, #FFC107);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(255, 23, 68, 0.8), 0 0 40px rgba(255, 82, 82, 0.6);
+  color: #ff4a24;
   font-weight: 900;
-  animation: textGlow 2s ease-in-out infinite alternate;
-  position: relative;
+  text-shadow: 0 0 15px rgba(255, 74, 36, 0.45);
 }
 
 .result-name {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  color: #D84315;
+  color: var(--gray-900);
 }
 
 .result-card.rarity-4 .result-name {
-  background: linear-gradient(45deg, #B71C1C, #D32F2F, #FF5722);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #c84a1a;
   font-weight: 800;
-  text-shadow: 0 0 15px rgba(183, 28, 28, 0.4);
-  animation: nameGlow 2.5s ease-in-out infinite alternate;
 }
 
 .result-class {
   font-size: 1rem;
-  color: #6D4C41;
-  opacity: 0.8;
+  color: var(--gray-600);
 }
 
 .result-card.rarity-4 .result-class {
-  color: #BF360C;
+  color: #ff4a24;
   font-weight: 600;
-  opacity: 0.9;
-  text-shadow: 0 0 8px rgba(191, 54, 12, 0.3);
 }
 
-.gacha-controls {
+.button-group {
   display: flex;
   gap: 1rem;
   justify-content: center;
   margin-bottom: 2rem;
 }
 
-.pull-button {
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.single-pull {
-  background: linear-gradient(135deg, #4CAF50, #66BB6A);
-  color: white;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.multi-pull {
-  background: linear-gradient(135deg, #FF9800, #FFB74D);
-  color: white;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.pull-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 25px rgba(0,0,0,0.25);
-  filter: brightness(1.05);
-}
-
-.single-pull:hover:not(:disabled) {
-  box-shadow: 0 12px 25px rgba(76, 175, 80, 0.3);
-}
-
-.multi-pull:hover:not(:disabled) {
-  box-shadow: 0 12px 25px rgba(255, 152, 0, 0.3);
-}
-
-.pull-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .history-section {
   margin-bottom: 2rem;
 }
 
-.history-title {
+.section-title {
   font-size: 1.3rem;
-  font-weight: 700;
-  color: #D84315;
+  font-weight: 600;
+  color: var(--gray-900);
   margin-bottom: 1rem;
 }
 
@@ -691,50 +580,37 @@ function pullOnce(): PullResult {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: rgba(255, 193, 7, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--primary-50);
+  border-left: 4px solid;
 }
 
-.history-item.rarity-1 { border-left: 4px solid #2196F3; }
-.history-item.rarity-2 { border-left: 4px solid #BA68C8; }
-.history-item.rarity-3 { border-left: 4px solid #FFD700; }
-.history-item.rarity-4 { border-left: 4px solid #F44336; }
+.history-item.rarity-1 { border-left-color: var(--accent-600); }
+.history-item.rarity-2 { border-left-color: var(--purple-500); }
+.history-item.rarity-3 { border-left-color: var(--warning); }
+.history-item.rarity-4 { border-left-color: #ff8a00; }
 
 .history-rarity {
   font-weight: 700;
   min-width: 2rem;
+  color: var(--gray-700);
 }
 
-.history-item.rarity-1 .history-rarity { color: #1565C0; }
-.history-item.rarity-2 .history-rarity { color: #8E24AA; }
-.history-item.rarity-3 .history-rarity { color: #F57C00; }
 .history-item.rarity-4 .history-rarity { 
-  background: linear-gradient(45deg, #FF1744, #FF5252);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 900;
-  text-shadow: 0 0 8px rgba(255, 23, 68, 0.4);
+  color: #ff7a00;
+  font-weight: 800;
 }
 
 .history-name {
   font-weight: 600;
-  color: #D84315;
+  color: var(--gray-900);
 }
 
 .probability-info {
-  background: rgba(255, 193, 7, 0.1);
+  background: var(--primary-50);
   padding: 1.5rem;
-  border-radius: 16px;
-}
-
-.probability-info h4 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #D84315;
-  margin-bottom: 1rem;
-  text-align: center;
+  border-radius: var(--radius-md);
 }
 
 .prob-list {
@@ -748,8 +624,9 @@ function pullOnce(): PullResult {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: white;
-  border-radius: 8px;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-200);
 }
 
 .prob-rarity {
@@ -757,20 +634,17 @@ function pullOnce(): PullResult {
   font-size: 1.1rem;
 }
 
-.prob-rarity[data-rarity="1"] { color: #2196F3; }
-.prob-rarity[data-rarity="2"] { color: #BA68C8; }
-.prob-rarity[data-rarity="3"] { color: #FFD700; }
+.prob-rarity[data-rarity="1"] { color: var(--accent-700); }
+.prob-rarity[data-rarity="2"] { color: var(--purple-600); }
+.prob-rarity[data-rarity="3"] { color: var(--warning); }
 .prob-rarity[data-rarity="4"] { 
-  background: linear-gradient(45deg, #F44336, #FF5252);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ff7a00;
   font-weight: 800;
 }
 
 .prob-value {
   font-weight: 600;
-  color: #D84315;
+  color: var(--gray-700);
 }
 
 @keyframes fadeInUp {
@@ -781,19 +655,6 @@ function pullOnce(): PullResult {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes rainbow {
-  0%, 100% { filter: hue-rotate(0deg); }
-  50% { filter: hue-rotate(180deg); }
-}
-
-@keyframes redYellowShift {
-  0%, 100% { 
-    border-color: #D32F2F;
-    background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 25%, #EF9A9A 50%, #E57373 75%, #F44336 100%);
-    box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4), 0 0 40px rgba(211, 47, 47, 0.2);
   }
 }
 
@@ -814,24 +675,6 @@ function pullOnce(): PullResult {
   }
 }
 
-@keyframes textGlow {
-  0% {
-    text-shadow: 0 0 15px rgba(255, 23, 68, 0.6), 0 0 30px rgba(255, 82, 82, 0.4);
-  }
-  100% {
-    text-shadow: 0 0 25px rgba(255, 23, 68, 0.8), 0 0 50px rgba(255, 82, 82, 0.6), 0 0 75px rgba(255, 138, 128, 0.4);
-  }
-}
-
-@keyframes nameGlow {
-  0% {
-    text-shadow: 0 0 10px rgba(183, 28, 28, 0.3);
-  }
-  100% {
-    text-shadow: 0 0 20px rgba(183, 28, 28, 0.5), 0 0 30px rgba(211, 47, 47, 0.3);
-  }
-}
-
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
@@ -839,29 +682,6 @@ function pullOnce(): PullResult {
   50% {
     transform: translateY(-2px);
   }
-}
-
-.pity-warning {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
-  border: 2px solid #FF9800;
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.warning-icon {
-  font-size: 1.5rem;
-  animation: shake 0.5s ease-in-out infinite alternate;
-}
-
-.warning-text {
-  font-weight: 600;
-  color: #D84315;
-  line-height: 1.4;
 }
 
 @keyframes pulse {
@@ -875,22 +695,22 @@ function pullOnce(): PullResult {
   }
 }
 
-@keyframes shake {
-  0% { transform: translateX(-2px); }
-  100% { transform: translateX(2px); }
-}
-
 @media (max-width: 640px) {
-  .gacha-container {
-    padding: 2rem;
+  .page-container {
+    padding: 1rem;
   }
   
-  .gacha-stats {
-    flex-direction: column;
-    gap: 1rem;
+  .card {
+    padding: 1.5rem;
   }
   
-  .gacha-controls {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+  
+  .button-group {
     flex-direction: column;
   }
   
@@ -903,20 +723,20 @@ function pullOnce(): PullResult {
     gap: 0.5rem;
   }
   
+  .result-card {
+    padding: 1.5rem;
+  }
+  
   .result-card-small {
     padding: 0.8rem;
   }
   
-  .result-card-small .result-rarity {
-    font-size: 1rem;
+  .result-rarity {
+    font-size: 1.5rem;
   }
   
-  .result-card-small .result-name {
-    font-size: 0.8rem;
-  }
-  
-  .result-card-small .result-class {
-    font-size: 0.7rem;
+  .result-name {
+    font-size: 1.2rem;
   }
 }
 </style>
